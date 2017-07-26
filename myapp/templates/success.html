@@ -1,0 +1,34 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome Page</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+        html,body{
+            height: 100%;
+        }
+        .container{
+            min-height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="container"style="width:60%;opacity: 0.92;filter: alpha(opacity=92);background-color:#000;color:#ffffff">
+<h1 align="center" id="h1">You have Successfully Signed Up</h1><br>
+<h1 align="center" id="h2">Redirecting To Log....</h1><br>
+    <script>
+        function Redirect() {
+          window.location='http://127.0.0.1:8000/login/'
+        }
+        setTimeout('Redirect()',3000);
+    </script>
+</div>
+</body>
+</html>
