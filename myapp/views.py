@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.shortcuts import render, redirect
-from forms import SignUpForm, LoginForm
-from models import User, SessionToken
+from forms import SignUpForm, LoginForm, PostForm
+from models import User, SessionToken, PostModel
 from django.contrib.auth.hashers import make_password, check_password
+from imgurpython import ImgurClient
 
 
 def signup(request):
@@ -37,12 +38,12 @@ def signup(request):
 def login(request):
     message = None
     form = LoginForm(request.POST)
-    print (form)
-    # logger = check_validation(request)
-    # if logger:
-    #     response = redirect('feed/')
-    #     return response
-    # else:
+    # print (form)
+    # # logger = check_validation(request)
+    # # if logger:
+    # #     response = redirect('feed/')
+    # #     return response
+    # # else:
     if request.method == "POST":
         print ('hello1')
         form = LoginForm(request.POST)
@@ -58,7 +59,7 @@ def login(request):
                     token = SessionToken(user=user)
                     token.create_token()
                     token.save()
-                    response = redirect('feed/')
+                    response = redirect('/post/')
                     response.set_cookie(key='session_token', value=token.session_token)
                     return response
                 else:
@@ -76,8 +77,38 @@ def login(request):
         return render(request, 'login.html', {'form': form})
 
 
+def post_view(request):
+    user = check_validation(request)
+    if user:
+        if request.method == 'POST':
+            form = PostForm(request.POST, request.FILES)
+            if form.is_valid():
+                image = form.cleaned_data.get('image')
+                caption = form.cleaned_data.get('caption')
+                post = PostModel(user=user, image=image, caption=caption)
+                post.save()
+                path = str(post.image.url)
+                client = ImgurClient('075ba389c237327', '87fb26c7f1af1203fe71c6b810662290462fa6bd')
+                post.image_url = client.upload_from_path(path, anon=True)['link']
+                post.save()
+                return redirect('/feed/')
+        elif request.method == 'GET':
+            form = PostForm()
+            return render(request, 'post.html', {'form': form})
+    else:
+        form = LoginForm()
+        return render(request, 'login.html', {'form': form})
+
+
 def feed_view(request):
-    return render(request, 'feed.html')
+    user = check_validation(request)
+    if user:
+        posts = PostModel.objects.all().order_by('created_on')
+        return render(request, 'feed.html', {'posts': posts})
+    else:
+        return redirect('/login/')
+
+
 
 
 # For validating the session

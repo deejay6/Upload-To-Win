@@ -1,10 +1,25 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Feed</title>
+      <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+{#    <script src="{% static 'js/angular.min.js' %}"></script>#}
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
 </head>
 <body>
 <h1>Feed Login</h1>
+<center>
+
+ {% for post in posts %}
+    <div class="card card-outline-secondary mb-3" style = 'width:40%;background-color: #f9f9f9'>
+    <h3> Posted by: {{ post.user.username }}</h3>
+    <img src="{{ post.image_url }}" width = '100%'>
+    <span>{{ post.caption }}</span>
+    </div>
+  {% endfor %}
+</center>
 </body>
 </html>
